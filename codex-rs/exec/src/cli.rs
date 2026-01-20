@@ -173,6 +173,61 @@ pub struct ReviewArgs {
     pub prompt: Option<String>,
 }
 
+#[derive(Parser, Debug)]
+pub struct VuhlpCli {
+    /// Model the agent should use.
+    #[arg(long, short = 'm', global = true)]
+    pub model: Option<String>,
+
+    /// Use open-source provider.
+    #[arg(long = "oss", default_value_t = false)]
+    pub oss: bool,
+
+    /// Specify which local provider to use (lmstudio, ollama, or ollama-chat).
+    /// If not specified with --oss, will use config default or show selection.
+    #[arg(long = "local-provider")]
+    pub oss_provider: Option<String>,
+
+    /// Select the sandbox policy to use when executing model-generated shell
+    /// commands.
+    #[arg(long = "sandbox", short = 's', value_enum)]
+    pub sandbox_mode: Option<codex_common::SandboxModeCliArg>,
+
+    /// Configuration profile from config.toml to specify default options.
+    #[arg(long = "profile", short = 'p')]
+    pub config_profile: Option<String>,
+
+    /// Convenience alias for low-friction sandboxed automatic execution (-a on-request, --sandbox workspace-write).
+    #[arg(long = "full-auto", default_value_t = false, global = true)]
+    pub full_auto: bool,
+
+    /// Skip all confirmation prompts and execute commands without sandboxing.
+    /// EXTREMELY DANGEROUS. Intended solely for running in environments that are externally sandboxed.
+    #[arg(
+        long = "dangerously-bypass-approvals-and-sandbox",
+        alias = "yolo",
+        default_value_t = false,
+        global = true,
+        conflicts_with = "full_auto"
+    )]
+    pub dangerously_bypass_approvals_and_sandbox: bool,
+
+    /// Tell the agent to use the specified directory as its working root.
+    #[clap(long = "cd", short = 'C', value_name = "DIR")]
+    pub cwd: Option<PathBuf>,
+
+    /// Allow running Codex outside a Git repository.
+    #[arg(long = "skip-git-repo-check", global = true, default_value_t = false)]
+    pub skip_git_repo_check: bool,
+
+    /// Additional directories that should be writable alongside the primary workspace.
+    #[arg(long = "add-dir", value_name = "DIR", value_hint = clap::ValueHint::DirPath)]
+    pub add_dir: Vec<PathBuf>,
+
+    #[clap(skip)]
+    pub config_overrides: CliConfigOverrides,
+}
+
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, ValueEnum)]
 #[value(rename_all = "kebab-case")]
 pub enum Color {

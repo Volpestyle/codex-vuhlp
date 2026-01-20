@@ -20,6 +20,7 @@ use codex_common::CliConfigOverrides;
 use codex_exec::Cli as ExecCli;
 use codex_exec::Command as ExecCommand;
 use codex_exec::ReviewArgs;
+use codex_exec::VuhlpCli;
 use codex_execpolicy::ExecPolicyCheckCommand;
 use codex_responses_api_proxy::Args as ResponsesApiProxyArgs;
 use codex_tui::AppExitInfo;
@@ -81,6 +82,9 @@ enum Subcommand {
     /// Run Codex non-interactively.
     #[clap(visible_alias = "e")]
     Exec(ExecCli),
+
+    /// Run Codex in vuhlp JSONL stdin/stdout mode.
+    Vuhlp(VuhlpCli),
 
     /// Run a code review non-interactively.
     Review(ReviewArgs),
@@ -501,6 +505,13 @@ async fn cli_main(codex_linux_sandbox_exe: Option<PathBuf>) -> anyhow::Result<()
                 root_config_overrides.clone(),
             );
             codex_exec::run_main(exec_cli, codex_linux_sandbox_exe).await?;
+        }
+        Some(Subcommand::Vuhlp(mut vuhlp_cli)) => {
+            prepend_config_flags(
+                &mut vuhlp_cli.config_overrides,
+                root_config_overrides.clone(),
+            );
+            codex_exec::run_vuhlp(vuhlp_cli, codex_linux_sandbox_exe).await?;
         }
         Some(Subcommand::Review(review_args)) => {
             let mut exec_cli = ExecCli::try_parse_from(["codex", "exec"])?;

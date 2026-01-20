@@ -9,10 +9,13 @@ mod event_processor;
 mod event_processor_with_human_output;
 pub mod event_processor_with_jsonl_output;
 pub mod exec_events;
+mod vuhlp;
 
 pub use cli::Cli;
 pub use cli::Command;
 pub use cli::ReviewArgs;
+pub use cli::VuhlpCli;
+pub use vuhlp::run_vuhlp;
 use codex_common::oss::ensure_oss_provider_ready;
 use codex_common::oss::get_default_model_for_oss_provider;
 use codex_common::oss::ollama_chat_deprecation_notice;
