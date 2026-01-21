@@ -613,9 +613,6 @@ async fn run_turn(
                         Ok(VuhlpInput::User { .. }) => {
                             warn!("user input received while awaiting approval");
                         }
-                        Ok(other) => {
-                            warn!(?other, "unexpected input while waiting for approval");
-                        }
                         Err(err) => {
                             error!(?err, "invalid JSON while waiting for approval");
                         }
